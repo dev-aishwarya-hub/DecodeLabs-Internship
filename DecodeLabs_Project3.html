@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DecodeLabs AI | Recommendation Engine</title>
+    
+    <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css" />
+    <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+
+    <style>
+        :root {
+            --baby-pink: #f68f8f;
+            --magenta: #fd576d;
+            --magenta-hover: #fe5a68;
+            --card-bg: #ffffff;
+            --text-main: #2D1B22; 
+            --text-muted: #7A5C68;
+            --badge-bg: #FFF0F5;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--baby-pink); 
+            color: var(--text-main);
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 680px;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(255, 0, 255, 0.1); 
+            border: 2px solid rgba(255, 0, 255, 0.15);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            color: var(--magenta); 
+            margin: 0 0 8px 0;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            margin: 0;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 12px;
+            box-sizing: border-box;
+            border: 2px solid var(--baby-pink); 
+            border-radius: 10px;
+            font-size: 0.95rem;
+            resize: vertical;
+            font-family: inherit;
+            background-color: #FFF5F7; 
+            color: var(--text-main);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--magenta); 
+            box-shadow: 0 0 0 3px rgba(255, 0, 255, 0.2);
+        }
+
+        button {
+            width: 100%;
+            background-color: var(--magenta); 
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(255, 0, 255, 0.2);
+        }
+
+        button:hover {
+            background-color: var(--magenta-hover);
+            transform: translateY(-1px);
+        }
+
+        .results-section {
+            margin-top: 30px;
+            border-top: 2px solid #FFF0F3;
+            padding-top: 20px;
+        }
+
+        .results-title {
+            font-weight: 700;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            color: var(--magenta);
+        }
+
+        /* Generated Advanced Recommendation Card Designs */
+        .rec-card {
+            background: #FFF5F7; 
+            border-left: 5px solid var(--magenta); 
+            padding: 20px;
+            border-radius: 0 10px 10px 0;
+            margin-bottom: 18px;
+            border-top: 1px solid rgba(255, 192, 203, 0.4);
+            border-right: 1px solid rgba(255, 192, 203, 0.4);
+            border-bottom: 1px solid rgba(255, 192, 203, 0.4);
+        }
+
+        .rec-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .rec-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .meter-container {
+            background: #EAE0E3;
+            border-radius: 4px;
+            height: 8px;
+            width: 100%;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .meter-fill {
+            background: var(--magenta); 
+            height: 100%;
+            border-radius: 4px;
+        }
+
+        /* Expanded Aspects Layout styling */
+        .aspect-block {
+            margin-top: 8px;
+            font-size: 0.88rem;
+        }
+
+        .keywords-badge {
+            display: inline-block;
+            background: white;
+            color: var(--magenta);
+            border: 1px solid var(--baby-pink);
+            padding: 2px 8px;
+            border-radius: 6px;
+            margin-right: 4px;
+            margin-top: 4px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .insight-text {
+            background: rgba(255, 255, 255, 0.6);
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-top: 8px;
+            border-left: 3px solid var(--text-muted);
+            color: var(--text-main);
+            font-style: italic;
+            font-size: 0.85rem;
+        }
+    </style>
+
+    <py-config>
+        packages = ["numpy", "pandas", "scikit-learn"]
+    </py-config>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>💖 DecodeLabs Intelligence Engine</h1>
+            <p>Project 3: Advanced Content-Based AI Pattern Matching</p>
+        </div>
+
+        <div class="input-group">
+            <label for="user-intent">Describe your goals, tech stack, or career interests:</label>
+            <textarea id="user-intent" placeholder="e.g., I want to learn to code automated scripts using python and handle statistical data..."></textarea>
+        </div>
+
+        <button id="run-btn" py-click="generate_recommendations">✨ Analyze Alignment Pathways</button>
+
+        <div class="results-section">
+            <div class="results-title">🔮 Discovered Pattern Alignments & Aspects</div>
+            <div id="output-display">
+                <p style="color: var(--text-muted); font-style: italic;">Your complex alignment analysis will compute here dynamically...</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="py">
+        import pandas as pd
+        import re
+        from sklearn.feature_extraction.text import TfidfVectorizer
+        from sklearn.metrics.pairwise import cosine_similarity
+        from pyscript import document
+
+        def generate_recommendations(event):
+            output_div = document.querySelector("#output-display")
+            user_input = document.querySelector("#user-intent").value.strip()
+
+            if not user_input:
+                output_div.innerHTML = "<p style='color: #FF00FF; font-weight: 600;'>⚠️ Please enter a few interest terms first.</p>"
+                return
+
+            output_div.innerHTML = "<p style='color: #7A5C68; font-style: italic;'>Recalculating similarity metrics and aspect overlays...</p>"
+
+            # 1. Dataset Structural Catalog Items
+            item_catalog = {
+                'Title': [
+                    'Advanced Python & Automation',
+                    'Frontend Web Development',
+                    'Deep Neural Networks & Computer Vision',
+                    'Cloud Infrastructure & AWS DevOps',
+                    'Data Science & Statistical Modeling'
+                ],
+                'Tags': [
+                    'python scripting automation backend code optimization scripting developer',
+                    'html css javascript frontend web design responsive UI website react',
+                    'ai neural networks computer vision tensors deep learning pytorch artificial intelligence',
+                    'cloud aws devops linux automation infrastructure systems servers docker',
+                    'python data science statistics analysis pandas machine learning analytics algorithms'
+                ],
+                'Insight': [
+                    'Highly recommended because your goals focus heavily on backend workflow architecture and optimizing automated scripts.',
+                    'Perfect match for your interest in rendering elegant UI designs, interactive elements, and frontend website structures.',
+                    'Selected due to your strong thematic interest in advanced artificial intelligence fields, vision matrices, and tensor layers.',
+                    'Best aligned to your interest in system environments, continuous cloud tracking, deployment pipelines, and Linux controls.',
+                    'Targeted match for your choice to extract deep analytical business patterns using statistical equations and learning code.'
+                ]
+            }
+            df_items = pd.DataFrame(item_catalog)
+
+            # 2. Vectorization Pipeline
+            tfidf = TfidfVectorizer(stop_words='english')
+            tfidf_matrix = tfidf.fit_transform(df_items['Tags'])
+            
+            # 3. Alignment Matrix Calculations
+            user_vector = tfidf.transform([user_input])
+            scores = cosine_similarity(user_vector, tfidf_matrix).flatten()
+            df_items['Score'] = scores
+
+            df_rec = df_items.sort_values(by='Score', ascending=False)
+
+            # Clean user inputs for identifying matching feature words
+            input_words = set(re.findall(r'\w+', user_input.lower()))
+
+            # 4. Building Advanced Multi-Aspect Elements
+            html_buffer = ""
+            rank = 1
+            has_matches = False
+
+            for idx, row in df_rec.iterrows():
+                if row['Score'] > 0:
+                    has_matches = True
+                    percentage = int(row['Score'] * 100)
+                    
+                    # Aspect Extraction: Find intersecting matching words between item and user input
+                    course_tags = set(row['Tags'].split())
+                    matched_keywords = input_words.intersection(course_tags)
+                    
+                    # Formulate badging
+                    badges_html = "".join([f'<span class="keywords-badge">#{word}</span>' for word in matched_keywords])
+                    if not badges_html:
+                        badges_html = '<span style="color: var(--text-muted); font-size:0.8rem;">Contextual Match</span>'
+
+                    html_buffer += f"""
+                    <div class="rec-card">
+                        <div class="rec-title">💝 Rank {rank}: {row['Title']}</div>
+                        <div class="rec-meta">Match Precision: {percentage}%</div>
+                        
+                        <div class="meter-container">
+                            <div class="meter-fill" style="width: {percentage}%"></div>
+                        </div>
+
+                        <div class="aspect-block">
+                            <strong>🎯 Intersecting Core Attributes:</strong><br>
+                            {badges_html}
+                        </div>
+
+                        <div class="insight-text">
+                            <strong>🧠 AI System Insight:</strong> {row['Insight']}
+                        </div>
+                    </div>
+                    """
+                    rank += 1
+
+            if not has_matches:
+                html_buffer = "<p style='color: #7A5C68; font-style: italic;'>No pattern matches discovered. Try technical concepts like 'Python', 'Web', 'AWS', or 'AI'.</p>"
+
+            output_div.innerHTML = html_buffer
+    </script>
+
+</body>
+</html>
